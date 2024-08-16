@@ -22,7 +22,7 @@ local function on_code_action_results(results, context, options)
     local client_id, action
     if vim.version() >= vim.version.parse("0.10.0") then
       client_id = action_tuple.ctx.client_id
-      action = action_tuple.ctx.action
+      action = action_tuple.action
     else
       client_id = action_tuple[1]
       action = action_tuple[2]
