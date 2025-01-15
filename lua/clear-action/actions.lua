@@ -116,6 +116,31 @@ M.apply = function(prefix)
 end
 
 ---@param filters table<string, string> | nil
+M.quickfix_first = function(filters)
+  code_action({
+    first = true,
+    apply = true,
+    context = {
+      only = { "quickfix" },
+    },
+    filter = function(action)
+      local found = false
+      local diagnostics = utils.get_current_line_diagnostics()
+      for diag_code, fix_message in pairs(filters or {}) do
+        for _, diagnostic in pairs(diagnostics) do
+          if diagnostic.code == diag_code then
+            found = true
+            local title = vim.fn.trim(action.title)
+            if vim.startswith(title, fix_message) then return true end
+          end
+        end
+      end
+      return not found
+    end,
+  })
+end
+
+---@param filters table<string, string> | nil
 M.quickfix = function(filters)
   code_action({
     apply = true,
