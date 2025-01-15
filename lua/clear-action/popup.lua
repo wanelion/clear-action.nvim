@@ -152,6 +152,7 @@ local function apply_keymaps(win, bufnr, action_tuples, labels, on_select)
   end
 
   vim.keymap.set("n", "<Esc>", close_win, { buffer = bufnr })
+  vim.keymap.set("n", "<C-c>", close_win, { buffer = bufnr })
 end
 
 M.select = function(action_tuples, on_select)
