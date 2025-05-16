@@ -19,16 +19,9 @@ local function on_code_action_results(results, context, options)
   local function on_select(action_tuple)
     if not action_tuple then return end
 
-    local client_id, action
-    if vim.version() >= vim.version.parse("0.10.0") then
-      client_id = action_tuple.ctx.client_id
-      action = action_tuple.action
-    else
-      client_id = action_tuple[1]
-      action = action_tuple[2]
-    end
+    local client = vim.lsp.get_client_by_id(action_tuple[1])
+    local action = action_tuple[2]
 
-    local client = vim.lsp.get_client_by_id(client_id)
     utils.handle_action(action, client, context)
   end
 
@@ -39,15 +32,7 @@ local function on_code_action_results(results, context, options)
       if action_filter(action) then
         action.title = action.title:gsub("\r\n", "\\r\\n")
         action.title = action.title:gsub("\n", "\\n")
-
-        local action_tuple
-        if not config.options.popup.enable and vim.version() >= vim.version.parse("0.10.0") then
-          tuple = { ctx = { client_id = client_id }, action = action }
-        else
-          tuple = { client_id, action }
-        end
-
-        table.insert(action_tuples, tuple)
+        table.insert(action_tuples, { client_id, action })
       end
     end
   end
@@ -67,11 +52,7 @@ local function on_code_action_results(results, context, options)
         prompt = "Code actions:",
         kind = "codeaction",
         format_item = function(action_tuple)
-          if vim.version() >= vim.version.parse("0.10.0") then
-            return action_tuple.action.title
-          else
-            return action_tuple[2].title
-          end
+          return action_tuple[2].title
         end,
       }, on_select)
     end
@@ -90,7 +71,9 @@ local function code_action(options)
   if not context.triggerKind then
     context.triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked
   end
-  if not context.diagnostics then context.diagnostics = utils.get_current_line_diagnostics() end
+  if not context.diagnostics then
+    context.diagnostics = utils.get_current_line_diagnostics()
+  end
 
   local mode = vim.api.nvim_get_mode().mode
   if options.range then
