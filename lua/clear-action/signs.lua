@@ -75,7 +75,7 @@ end
 
 local function code_action_request()
   local bufnr = vim.api.nvim_get_current_buf()
-  local params = vim.lsp.util.make_range_params()
+  local params = vim.lsp.util.make_range_params(0, "utf-8")
 
   params.context = {
     triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Automatic,

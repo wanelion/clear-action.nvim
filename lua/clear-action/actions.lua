@@ -84,7 +84,7 @@ local function code_action(options)
     local range = utils.range_from_selection(0, mode)
     params = vim.lsp.util.make_given_range_params(range.start, range["end"])
   else
-    params = vim.lsp.util.make_range_params()
+    params = vim.lsp.util.make_range_params(0, "utf-8")
   end
 
   params.context = context
